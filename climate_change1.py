@@ -7,7 +7,6 @@ Created on Sat Dec  3 14:26:37 2022
 """
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sb
 
 # Reading data from the Csv file 
 def reading_csv(filename):
@@ -19,61 +18,48 @@ def reading_csv(filename):
     filtered_dataframe=cleaned_dataframe.loc[filt]
     filtered_dataframe=filtered_dataframe.groupby(['Country Name'], 
                                                   as_index=False).sum()
-    
-    #print(df2_group)
-    #df2t=filtered_dataframe.T
-    #print(df2t)
-    return (filtered_dataframe)
+    final_filtered_Dataframe=filtered_dataframe.filter(
+        items=['Country Name','1960', '1980','2000','2010','2018','2019'])
+    transpose_data=final_filtered_Dataframe.set_index(['Country Name']).T
+    return (final_filtered_Dataframe,transpose_data)
 
-
-def population():
-    population=reading_csv("population1.csv")
+def population(filename):
+    population,population_transposeddf=reading_csv(filename)
     plt.figure(figsize=(30,10))
-    dataframe=population.iloc[:,[0,1,21,41,51,61,62]]
-    dataframe.plot(kind="bar", x= 'Country Name', rot=0, align='center',width=1.5)
+    population.plot(kind="bar", x='Country Name', rot=0, align='center',
+                    width=0.5)
     plt.xticks(rotation = 20)
-    plt.title("Total Estimated population (1960-2021)")
+    plt.title("Total Estimated population (1960-2019)")
     plt.ylabel("Population growth (annual %)")
-    print(population)
+
+def agricultural_land(filename):
+    agricultural,agricultural_transposeddf=reading_csv(filename)
+    plt.figure(figsize=(30,10))
+    agricultural.plot(kind="bar", x='Country Name', rot=0, align='center',
+                      width=0.5)
+    plt.xticks(rotation = 20)
+    plt.title("Total Estimated agricultural land (1960-2019)")
+    plt.ylabel("Agricultural land (sq. km)")
     
-
-def climate_change_barchart():
-    csv_dataframe=pd.read_csv("climate_change2.csv")
-    cleaned_dataframe=csv_dataframe.replace(' ',0)
-    countries=['China']
-    filt=cleaned_dataframe['Country Name'].isin(countries)
-    filtered_dataframe=cleaned_dataframe.loc[filt]
-    indicator=['Population, total','CO2 emissions (kt)','Renewable energy consumption (% of total final energy consumption)']
-    filt1=filtered_dataframe['Indicator Name'].isin(indicator)
-    final=filtered_dataframe.loc[filt1]
-    final=final.replace('Renewable energy consumption (% of total final energy consumption)','Renewable energy consumption')
-    final.drop(['Country Name','Country Code'], axis=1, inplace=True)
-    final= final.set_index([pd.Index(final['Indicator Name'])])
-    final.drop(['Indicator Name','Indicator Code'], axis=1, inplace=True)
-    final1=final.transpose()
-    #print(final1.corr())
-    dataplot=sb.heatmap(final1.corr(),cmap="YlGnBu",annot=True)
-
-
-
 def co2_emission_linechart(filename):
-    co2_emission=reading_csv(filename)
+    co2_emission,co2_transposed=reading_csv(filename)
     plt.Figure(figsize=(10,10))
-    co2_emission.plot(x="Country Name", y=["1960","1980","2000","2010","2020","2021"],
-                  kind="line", linestyle='-.',title = "Total Estimated number of co2 emission (1960-2021)", ylabel="total values for co2 emission")
-def renewable_enegy_linechart(filename):
-    renewable_energy=reading_csv(filename)
+    co2_transposed.plot(kind="line", linestyle='-.', 
+             title ="Total Estimated amount of co2 emission (1960-2019)", 
+             ylabel="Amount of co2 emission (kt)", xlabel="Period")
+    
+def methane_emission(filename):
+    renewable_energy,renewable_transposeddf=reading_csv(filename)   
     plt.figure(figsize=(20,20))
-    renewable_energy.plot(x="Country Name", y=["1960","1980","2000","2010","2020","2021"],
-                          kind="line", linestyle='-.')
-    plt.title("Total Estimated number of Renewable energy(1960-2021)")
-    plt.ylabel("total values for Renewable energy")
+    renewable_transposeddf.plot(kind="line", linestyle='-.')
+    plt.title("Total Estimated amount of Methane emmission(1960-2019)")
+    plt.ylabel("Amount of Methane emissions (kt)")
+    plt.xlabel("Period")
 
-climate_change_barchart()
-population()
+population("population1.csv")
+agricultural_land("Agricultural_land.csv")
 co2_emission_linechart("co2_emmision.csv")
-renewable_enegy_linechart("renewable_enegy.csv")
-
+methane_emission("methane_emission.csv")
 plt.show()
  
 

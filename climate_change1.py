@@ -115,11 +115,16 @@ def heatmap(filename):
     map_corr(heatmap_transposedf)
     plt.show()
     heatmap_transposedf = heatmap_transposedf.fillna(0)
- 
+
+#Function to call heatmap
 heatmap("climate_change2.csv")
+#Function to call urban population
 population("urban_population.csv")
+#Functio to call energy usage
 energy_use("energy_use.csv")
+#Function to call co2_emmission
 co2_emission_linechart("co2_emmision.csv")
+#Function to call methane_emmision
 methane_emission("methane_emission.csv")
 plt.show()
 
